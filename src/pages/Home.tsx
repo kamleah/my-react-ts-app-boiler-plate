@@ -1,29 +1,52 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { RootState } from '../redux/store';
+import { FullPageSpinner } from '../components';
+import { useDispatch } from 'react-redux';
+import { loggedUserDetails, login } from '../features/auth/authSlice';
 
 const Home: React.FC = () => {
-    const user = useSelector((state: any) => state.auth.user);
+    const { userDetails, user } = useSelector((state: RootState) => state.auth);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const dummyData = {
+            id: 1,
+            email: "johndoe@example.com",
+            access: "dummy_access_token",
+            refresh: "dummy_refresh_token",
+            first_name: "John",
+            last_name: "Doe",
+            user_role: "user",
+        };
+
+        dispatch(loggedUserDetails({ userDetails: dummyData }));
+        dispatch(login({
+            user: dummyData.email,
+            access: dummyData.access,
+            refresh: dummyData.refresh
+        }));
+    }, []);
+
+
+    useEffect(() => {
+
+        if (user) {
+            if(userDetails?.user_role == "user"){
+                navigate("/header-graphic-creator");
+            }else{
+                navigate("/upload-template");
+            }
+        } else {
+            navigate("/login");
+        }
+
+    }, [user, navigate]);
+
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-            <h1 className="text-4xl font-bold text-indigo-600 mb-4">Welcome {user}!</h1>
-            {!user && <p className="text-lg text-gray-700 mb-6">
-                Log in to manage your todos or explore the app.
-            </p>}
-            {user ? <Link
-                to="/todos"
-                className="px-6 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700"
-            >
-                Go to Todo
-            </Link>
-                :
-                <Link
-                    to="/login"
-                    className="px-6 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700"
-                >
-                    Go to Login
-                </Link>}
-        </div>
+        <FullPageSpinner />
     );
 };
 

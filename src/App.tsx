@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Home, LoginPage, TodoPage } from './pages';
+import { BrowserRouter as Router, Routes } from 'react-router-dom';
 import { routes } from './routes';
+import Header from './components/header/Header';
 
 const App = () => {
 
